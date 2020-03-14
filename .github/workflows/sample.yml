@@ -1,0 +1,22 @@
+name: Sample
+on:
+  push:
+    branches:
+    - master
+jobs:
+  build:
+    name: Build ${{ matrix.os }} Sample
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup Haskell Stack
+        uses: matsubara0507/setup-stack@master
+        with:
+          stack-version: 2.1.3 # default is latest version
+      - run: |
+          stack --version
+          stack path --stack-root
