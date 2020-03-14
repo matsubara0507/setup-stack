@@ -23,3 +23,4 @@ jobs:
           stack path --stack-root
           echo $PATH
           which stack
+          ls /home/runner/.local/bin
