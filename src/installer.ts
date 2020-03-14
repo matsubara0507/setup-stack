@@ -38,11 +38,13 @@ async function _install(
     ? tc.extractZip(tmpPath, installDir)
     : tc.extractTar(tmpPath, installDir));
   core.addPath(extractedDir);
+  core.debug(`add path: ${extractedDir}`);
   await io.rmRF(tmpPath);
 }
 
 async function _upgrade(version: string) {
   if (version != 'latest') {
+    core.debug(`upgrade stack to ${version}`);
     await exec.exec('stack', ['upgrade', '--binary-version', version], {
       failOnStdErr: true
     });
