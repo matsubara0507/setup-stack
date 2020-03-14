@@ -6,8 +6,8 @@ on:
     - master
 jobs:
   run:
-    name: Run ${{ matrix.operating-system }}
-    runs-on: ${{ matrix.operating-system }}
+    name: Run ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
