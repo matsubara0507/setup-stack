@@ -5,24 +5,25 @@ import * as exec from '@actions/exec';
 import * as path from 'path';
 
 export async function installHaskellStack(version: string) {
-  const baseUrl = 'https://get.haskellstack.org/stable';
-
-  let installDir;
   switch (process.platform) {
     case 'linux':
-      installDir = path.join(process.env.HOME, '.local', 'bin');
-      await _install(installDir, `${baseUrl}/linux-x86_64.tar.gz`);
-      await _upgrade(version, true);
+      await _install(
+        path.join(process.env.HOME, '.local', 'bin'),
+        _buildArchiveLink(version, 'linux-x86_64.tar.gz')
+      );
       break;
     case 'darwin':
-      installDir = path.join(process.env.HOME, '.local', 'bin');
-      await _install(installDir, `${baseUrl}/osx-x86_64.tar.gz`);
-      await _upgrade(version, true);
+      await _install(
+        path.join(process.env.HOME, '.local', 'bin'),
+        _buildArchiveLink(version, 'osx-x86_64.tar.gz')
+      );
       break;
     case 'win32':
-      installDir = path.join(process.env.APPDATA, 'local', 'bin');
-      await _install(installDir, `${baseUrl}/windows-x86_64.zip`, true);
-      await _upgrade(version);
+      await _install(
+        path.join(process.env.APPDATA, 'local', 'bin'),
+        _buildArchiveLink(version, 'windows-x86_64.zip'),
+        true
+      );
       break;
     default:
       throw new Error(`unsupported OS: ${process.platform}`);
@@ -43,18 +44,10 @@ async function _install(
   await io.rmRF(tmpPath);
 }
 
-async function _upgrade(version: string, sudo?: boolean) {
-  if (version != 'latest') {
-    core.debug(`upgrade stack to ${version}`);
-    if (sudo) {
-      await exec.exec('sudo', [
-        'stack',
-        'upgrade',
-        '--binary-version',
-        version
-      ]);
-    } else {
-      await exec.exec('stack', ['upgrade', '--binary-version', version]);
-    }
+function _buildArchiveLink(version: string, target: string): string {
+  if (version == 'latest') {
+    return `https://get.haskellstack.org/stable/${target}`;
   }
+  const repository = 'https://github.com/commercialhaskell/stack';
+  return `${repository}/releases/download/v${version}/stack-${version}-${target}`;
 }
