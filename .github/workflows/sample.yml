@@ -22,3 +22,4 @@ jobs:
           stack --version
           stack path --stack-root
           echo $PATH
+          which stack
