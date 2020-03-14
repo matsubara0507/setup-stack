@@ -36,8 +36,9 @@ async function _install(
     case 'tar.gz':
       await tc.extractTar(tmpPath, installDir + '/tmp');
       const etractedDir = (await fs.readdirSync(installDir + '/tmp'))[0];
-      core.debug(`mv ${etractedDir}/stack ${installDir}/stack`);
-      await io.mv(`${etractedDir}/stack`, `${installDir}/stack`);
+      const sourceDir = `${installDir}/tmp/${etractedDir}`;
+      core.debug(`mv ${sourceDir}/stack ${installDir}/stack`);
+      await io.mv(`${sourceDir}/stack`, `${installDir}/stack`);
       break;
     case 'zip':
       await tc.extractZip(tmpPath, installDir);
