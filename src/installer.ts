@@ -12,20 +12,21 @@ export async function installHaskellStack(version: string) {
     case 'linux':
       installDir = path.join(process.env.HOME, '.local', 'bin');
       await _install(installDir, `${baseUrl}/linux-x86_64.tar.gz`);
+      await _upgrade(version, true);
       break;
     case 'darwin':
       installDir = path.join(process.env.HOME, '.local', 'bin');
       await _install(installDir, `${baseUrl}/osx-x86_64.tar.gz`);
+      await _upgrade(version, true);
       break;
     case 'win32':
       installDir = path.join(process.env.APPDATA, 'local', 'bin');
       await _install(installDir, `${baseUrl}/windows-x86_64.zip`, true);
+      await _upgrade(version);
       break;
     default:
       throw new Error(`unsupported OS: ${process.platform}`);
   }
-
-  await _upgrade(version);
 }
 
 async function _install(
@@ -42,9 +43,18 @@ async function _install(
   await io.rmRF(tmpPath);
 }
 
-async function _upgrade(version: string) {
+async function _upgrade(version: string, sudo?: boolean) {
   if (version != 'latest') {
     core.debug(`upgrade stack to ${version}`);
-    await exec.exec('stack', ['upgrade', '--binary-version', version]);
+    if (sudo) {
+      await exec.exec('sudo', [
+        'stack',
+        'upgrade',
+        '--binary-version',
+        version
+      ]);
+    } else {
+      await exec.exec('stack', ['upgrade', '--binary-version', version]);
+    }
   }
 }
