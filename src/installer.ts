@@ -1,29 +1,23 @@
 import * as core from '@actions/core';
 import * as io from '@actions/io';
 import * as tc from '@actions/tool-cache';
-import * as exec from '@actions/exec';
 import * as path from 'path';
+import * as fs from 'fs';
 
 export async function installHaskellStack(version: string) {
+  let installDir;
   switch (process.platform) {
     case 'linux':
-      await _install(
-        path.join(process.env.HOME, '.local', 'bin'),
-        _buildArchiveLink(version, 'linux-x86_64.tar.gz')
-      );
+      installDir = path.join(process.env.HOME, '.local', 'bin');
+      await _install(installDir, version, 'linux-x86_64', 'tar.gz');
       break;
     case 'darwin':
-      await _install(
-        path.join(process.env.HOME, '.local', 'bin'),
-        _buildArchiveLink(version, 'osx-x86_64.tar.gz')
-      );
+      installDir = path.join(process.env.HOME, '.local', 'bin');
+      await _install(installDir, version, 'osx-x86_64', 'tar.gz');
       break;
     case 'win32':
-      await _install(
-        path.join(process.env.APPDATA, 'local', 'bin'),
-        _buildArchiveLink(version, 'windows-x86_64.zip'),
-        true
-      );
+      installDir = path.join(process.env.APPDATA, 'local', 'bin');
+      await _install(installDir, version, 'windows-x86_64', 'zip');
       break;
     default:
       throw new Error(`unsupported OS: ${process.platform}`);
@@ -32,15 +26,26 @@ export async function installHaskellStack(version: string) {
 
 async function _install(
   installDir: string,
-  installUrl: string,
-  isZip?: boolean
+  version: string,
+  platform: string,
+  extension: 'tar.gz' | 'zip'
 ) {
-  const tmpPath = await tc.downloadTool(installUrl);
-  const extractedDir = await (isZip
-    ? tc.extractZip(tmpPath, installDir)
-    : tc.extractTar(tmpPath, installDir));
-  core.addPath(extractedDir);
-  core.debug(`add path: ${extractedDir}`);
+  const archiveLink = _buildArchiveLink(version, `${platform}.${extension}`);
+  const tmpPath = await tc.downloadTool(archiveLink);
+  switch (extension) {
+    case 'tar.gz':
+      await tc.extractTar(tmpPath, installDir + '/tmp');
+      const etractedDir = (await fs.readdirSync(installDir + '/tmp'))[0];
+      const sourceDir = `${installDir}/tmp/${etractedDir}`;
+      core.debug(`mv ${sourceDir}/stack ${installDir}/stack`);
+      await io.mv(`${sourceDir}/stack`, `${installDir}/stack`);
+      await io.rmRF(installDir + '/tmp');
+      break;
+    case 'zip':
+      await tc.extractZip(tmpPath, installDir);
+      break;
+  }
+  core.addPath(installDir);
   await io.rmRF(tmpPath);
 }
 
