@@ -1,0 +1,6 @@
+name: 'Setup Haskell Stack'
+description: 'Setup a Haskell Stack and add it to the PATH'
+author: 'MATSUBARA Nobutada'
+runs:
+  using: 'node12'
+  main: 'lib/setup-stack.js'
