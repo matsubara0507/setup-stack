@@ -1,5 +1,6 @@
 name: Sample
 on:
+  pull_request: null
   push:
     branches:
     - master
@@ -20,3 +21,4 @@ jobs:
       - run: |
           stack --version
           stack path --stack-root
+          echo $PATH
