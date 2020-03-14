@@ -31,4 +31,6 @@ jobs:
       run: npm run action
 
     - name: Display version
-      run: stack --version
+      run: |
+        stack --version
+        stack path --stack-root
