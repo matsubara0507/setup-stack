@@ -36,13 +36,9 @@ async function _install(
   switch (extension) {
     case 'tar.gz':
       await tc.extractTar(tmpPath, installDir + '/tmp');
-      const files = await fs.readdirSync(installDir + '/tmp', {
-        withFileTypes: true
-      });
-      core.debug(`files: ${files.map(({name}) => name).join(' ')}`);
-      const filename = files.filter(dirent => dirent.isFile())[0].name;
-      core.debug(`mv ${installDir}/tmp/${filename} ${installDir}/stack`);
-      await io.mv(`${installDir}/tmp/${filename}`, `${installDir}/stack`);
+      const sourceDir = `${installDir}/tmp/stack-${version}-${platform}`;
+      core.debug(`mv ${sourceDir}/stack ${installDir}/stack`);
+      await io.mv(`${sourceDir}/stack`, `${installDir}/stack`);
       break;
     case 'zip':
       await tc.extractZip(tmpPath, installDir);
