@@ -34,3 +34,4 @@ jobs:
       run: |
         stack --version
         stack path
+        echo $PATH
