@@ -27,7 +27,6 @@ jobs:
           stack-version: 2.1.3 # default is latest version
       - run: |
           stack --version
-          stack path --stack-root
           stack build
 ```
 
