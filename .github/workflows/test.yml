@@ -33,4 +33,4 @@ jobs:
     - name: Display version
       run: |
         stack --version
-        stack path --stack-root
+        stack path
