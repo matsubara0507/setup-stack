@@ -39,9 +39,9 @@ async function _install(
       const files = await fs.readdirSync(installDir + '/tmp', {
         withFileTypes: true
       });
-      core.debug(files.join(' '));
-      await io.mv(`${installDir}/tmp/${files[0]}`, `${installDir}/stack`);
+      core.debug(`files: ${files.join(' ')}`);
       core.debug(`mv ${installDir}/tmp/${files[0]} ${installDir}/stack`);
+      await io.mv(`${installDir}/tmp/${files[0]}`, `${installDir}/stack`);
       break;
     case 'zip':
       await tc.extractZip(tmpPath, installDir);
