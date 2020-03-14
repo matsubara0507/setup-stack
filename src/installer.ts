@@ -1,7 +1,6 @@
 import * as core from '@actions/core';
 import * as io from '@actions/io';
 import * as tc from '@actions/tool-cache';
-import * as exec from '@actions/exec';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -36,9 +35,9 @@ async function _install(
   switch (extension) {
     case 'tar.gz':
       await tc.extractTar(tmpPath, installDir + '/tmp');
-      const sourceDir = `${installDir}/tmp/stack-${version}-${platform}`;
-      core.debug(`mv ${sourceDir}/stack ${installDir}/stack`);
-      await io.mv(`${sourceDir}/stack`, `${installDir}/stack`);
+      const etractedDir = (await fs.readdirSync(installDir + '/tmp'))[0];
+      core.debug(`mv ${etractedDir}/stack ${installDir}/stack`);
+      await io.mv(`${etractedDir}/stack`, `${installDir}/stack`);
       break;
     case 'zip':
       await tc.extractZip(tmpPath, installDir);
