@@ -45,8 +45,6 @@ async function _install(
 async function _upgrade(version: string) {
   if (version != 'latest') {
     core.debug(`upgrade stack to ${version}`);
-    await exec.exec('stack', ['upgrade', '--binary-version', version], {
-      failOnStdErr: true
-    });
+    await exec.exec('stack', ['upgrade', '--binary-version', version]);
   }
 }
