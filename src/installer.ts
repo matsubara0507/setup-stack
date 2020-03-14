@@ -6,13 +6,15 @@ import * as path from 'path';
 
 export async function installHaskellStack(version: string) {
   const baseUrl = 'https://get.haskellstack.org/stable';
-  let installDir = path.join(process.env.HOME, '.local', 'bin');
 
+  let installDir;
   switch (process.platform) {
     case 'linux':
+      installDir = path.join(process.env.HOME, '.local', 'bin');
       await _install(installDir, `${baseUrl}/linux-x86_64.tar.gz`);
       break;
     case 'darwin':
+      installDir = path.join(process.env.HOME, '.local', 'bin');
       await _install(installDir, `${baseUrl}/osx-x86_64.tar.gz`);
       break;
     case 'win32':
